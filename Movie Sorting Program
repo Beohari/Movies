@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+
+<p id="heart"></p>
+<p id="test"></p>
+<p id="final"></p>
+<p id="complete"></p>
+
+<script>
+
+var ones = [["a"],["b"],["c"],["d"],["e"],["f"],["g"],["h"],["i"],["j"],["k"],["l"],["m"],["n"],["o"],["p"]];
+var newArray = [];
+var hugeList = [ones]; // this will be the list [ones, twos, ..., twofiftysix]
+var i = 0; // i iterates through the active small list
+var macroLevel = 0; // The overall level of the merge. When this hits the logbase2 of the size of ones, we are  done. Remember that hugeList[macroLevel] is the thing we want to be merging.
+
+
+var bigList = [];
+mergeArrays(hugeList[0][0], hugeList[0][1]); // to get the ball rolling
+
+function mergeArrays(arr1, arr2) { // this displays the box and button
+    x = arr1;
+    y = arr2; // these are global variables so they work in the button thing below
+    document.getElementById("heart").innerHTML = arr1[0] + " or " + arr2[0] + "<br>" +
+    '<input id="choice" type="text">' + '<button onclick="shiftAndPush(x,y)">OK</button>'
+} // the button above calls shiftAndPush when you click it
+
+function shiftAndPush(old1, old2) {
+
+    // The section below moves a movie into the merged list and displays the merged list.
+    
+    if (document.getElementById("choice").value == "A") {
+    newArray.push(old1[0]);
+    old1.shift();
+    document.getElementById("test").innerHTML = newArray.join("<br>")
+    } else if (document.getElementById("choice").value == "B") {
+    newArray.push(old2[0]);
+    old2.shift();
+    document.getElementById("test").innerHTML = newArray.join("<br>")
+    }
+    
+    // The section below checks if one of the lists is empty, and if it is, auto-completes the merged list and displays it. Then it increments i, resets the active merged list, and merges the next arrays from ones. When ones is exhausted, it prints all of the merged lists.
+    
+    if (old1.length == 0) {
+    finalArray = newArray.concat(old2);
+    document.getElementById("test").innerHTML = finalArray.join("<br>");
+    bigList.push(finalArray);
+    i += 2;
+    newArray = [];
+        if (i >= hugeList[macroLevel].length) { // when i gets too big, we move to the next macro level
+        hugeList.push(bigList);
+        document.getElementById("final").innerHTML = "Your current lists are" + "<br>" + bigList.join("<br>");
+        bigList = []; // reset bigList for the next macro level
+        macroLevel++; // increase the macro level and move to the next round
+            if (macroLevel >= Math.log(ones.length)/Math.log(2) ) { // when the macro level maxes out
+            document.getElementById("complete").innerHTML = "You're all done!" + "<br>" + "Your list is:" +
+            "<br><br>" + hugeList[macroLevel][0].join("<br>");
+            return
+            }
+        mergeArrays(hugeList[macroLevel][0], hugeList[macroLevel][1]) // to start the next level
+        i = 0; // reset i for the next macro level
+        } else {
+    mergeArrays(hugeList[macroLevel][i], hugeList[macroLevel][i+1])
+    } 
+    } else if (old2.length == 0) {
+    finalArray = newArray.concat(old1);
+    document.getElementById("test").innerHTML = finalArray.join("<br>");
+    bigList.push(finalArray);
+    i += 2;
+    newArray = [];
+        if (i >= hugeList[macroLevel].length) {
+        hugeList.push(bigList);
+        document.getElementById("final").innerHTML = "Your current lists are" + "<br>" + bigList.join("<br>");
+        bigList = []; // reset bigList for the next macro level
+        macroLevel++; // increase the macro level and move to the next round
+            if (macroLevel >= Math.log(ones.length)/Math.log(2) ) { // when the macro level maxes out
+            document.getElementById("complete").innerHTML = "You're all done!" + "<br>" + "Your list is:" +
+            "<br><br>" + hugeList[macroLevel][0].join("<br>");
+            return
+            }
+        mergeArrays(hugeList[macroLevel][0], hugeList[macroLevel][1])
+        i = 0; // reset i for the next macro level
+        } else {
+    mergeArrays(hugeList[macroLevel][i], hugeList[macroLevel][i+1])
+    }
+    }
+    // The part below goes back to the merging process if both lists are still non-empty.
+    
+    if (old1.length > 0 && old2.length > 0) {
+    mergeArrays(old1, old2)
+    }
+}
+
+</script>
+
+</body>
+</html>
